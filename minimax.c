@@ -13,7 +13,7 @@ int numberOfActionsSim = 0;
 // global variables end
 
 int PopulateActions(game_t *game, int *actions_list);
-double Minimax(game_t *game);
+double Minimax(game_t *game, double alpha, double beta);
 double PositionEvaluator(game_t *game);
 void PlayActions(game_t *game, int *action);
 void PlayActionsNoHistory(game_t *game, int *action);
@@ -44,7 +44,7 @@ void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
     for(int i = 0; i < number_of_actions; i++){
         PlayActions(&game_cache, actions_list[i]);
     
-        actions_value[i] = Minimax(&game_cache);
+        actions_value[i] = Minimax(&game_cache, -888, 888);
 
         UndoTurnHistory();
         GoThroughActions(&game_cache);
@@ -62,7 +62,7 @@ void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
 int PopulateActions(game_t *game, int *actions_list){
     int index = 0;
     player_t *player;
-    for (int i = 0; i < 2; i++)
+    for (int i = 1; i >= 0; i--)
         for (int row = 0; row < NUMBER_OF_CELLS; row++)
             for (int col = 0; col < NUMBER_OF_CELLS; col++){
                 if (i == 0)
@@ -162,9 +162,9 @@ double Min(double a, double b){
     return b;
 }
 
-int depth = 4;
+int depth = 5;
 
-double Minimax(game_t *game_C){
+double Minimax(game_t *game_C, double alpha, double beta){
     switch(game_C->state){
         case P_BLUE_WON:
             return -99;
@@ -181,30 +181,40 @@ double Minimax(game_t *game_C){
     numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
 
     if (game_C->turn == P_RED){
-        double value = -888;
             for(int i = 0; i < numberOfActionsSim; i++){
                 PlayActions(game_C, (actionsListSim[i]));
                 depth--;
-                value = Max(value, Minimax(game_C));
+                double value = Minimax(game_C, alpha, beta);
                 depth++;
                 UndoTurnHistory();
                 GoThroughActions(game_C);
                 numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
+
+                alpha = Max(alpha, value);
+
+                if (alpha >= beta){
+                    break;
+                }
             }
-        return value;
+        return alpha;
     }
     else if(game_C->turn == P_BLUE){
-        double value = 888;
             for(int i = 0; i < numberOfActionsSim; i++){
                 PlayActions(game_C, (actionsListSim[i]));
                 depth--;
-                value = Min(value, Minimax(game_C));
+                double value = Minimax(game_C, alpha, beta);
                 depth++;
                 UndoTurnHistory();
                 GoThroughActions(game_C);
                 numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
+
+                beta = Min(beta, value);
+
+                if (alpha >= beta){
+                    break;
+                }
             }
-        return value;
+        return beta;
     }
     return -100000000;
 }
