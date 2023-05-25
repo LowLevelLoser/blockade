@@ -1,6 +1,8 @@
 # blockade
 how to play:
 
+left click to place your color right click to place the gray piece
+
 the one with the most of their color wins 
 
 you can only place your color or the gray piece adjacent to the one previously placed
