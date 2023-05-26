@@ -6,7 +6,7 @@
 
 // global variables start
 game_t *originalGame;
-int actionHistory[32][3];
+int actionHistory[NUMBER_OF_CELLS*NUMBER_OF_CELLS*2][3];
 int latestAction = 0;
 int actionsListSim[32][3];
 int numberOfActionsSim = 0;
@@ -34,8 +34,8 @@ void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
     game_cache.blue_player = &blue_cache;
     game_cache.gray_player = &gray_cache;
 
-    int actions_list [32][3];
-    double actions_value [32];
+    int actions_list [NUMBER_OF_CELLS*NUMBER_OF_CELLS*2][3];
+    double actions_value [NUMBER_OF_CELLS*NUMBER_OF_CELLS*2];
     int number_of_actions = 0;
     int smallest_value_index = 0;
 
@@ -162,7 +162,7 @@ double Min(double a, double b){
     return b;
 }
 
-int depth = 5;
+int depth = 2;
 
 double Minimax(game_t *game_C, double alpha, double beta){
     switch(game_C->state){
