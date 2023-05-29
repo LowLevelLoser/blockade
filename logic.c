@@ -21,7 +21,7 @@ void ClickUrls();
 
 void RunGame(game_t *game){
     if (IsKeyPressed(KEY_ESCAPE)){
-        game->state = MENU_STATE;
+        ResetGame(game);
     }
     switch(game->state){
         case MENU_STATE:
@@ -100,7 +100,6 @@ void CheckMoves(game_t *game, player_t *player){
             }
         }
     }
-    //printf("\n*****check moves fault end\n");
 }
 
 void PlayRunningGame(game_t *game){
@@ -220,7 +219,7 @@ void ResetGame(game_t *game){
  
     memset(game->board, EMPTY, sizeof(int)*NUMBER_OF_CELLS*NUMBER_OF_CELLS);
     game->turn = P_RED;
-    game->choice = 1;
+    game->choice = 2;
     game->state = MENU_STATE;
 }
 
@@ -233,9 +232,4 @@ void ClickUrls(){
             OpenURL("https://www.youtube.com/@lowlevell0ser25");
         }
     }
-    //GetMouseY();
 }
-
-
-
-

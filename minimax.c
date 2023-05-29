@@ -13,12 +13,11 @@ int numberOfActionsSim = 0;
 // global variables end
 
 int PopulateActions(game_t *game, int *actions_list);
-double Minimax(game_t *game, double alpha, double beta);
+double Minimax(game_t *game, double alpha, double beta, int depth);
 double PositionEvaluator(game_t *game);
 void PlayActions(game_t *game, int *action);
 void PlayActionsNoHistory(game_t *game, int *action);
-void GoThroughActions(game_t *game);
-void UndoTurnHistory();
+void UndoTurn(game_t *game);
 
 void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
     latestAction = 0;
@@ -43,11 +42,8 @@ void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
 
     for(int i = 0; i < number_of_actions; i++){
         PlayActions(&game_cache, actions_list[i]);
-    
-        actions_value[i] = Minimax(&game_cache, -888, 888);
-
-        UndoTurnHistory();
-        GoThroughActions(&game_cache);
+        actions_value[i] = Minimax(&game_cache, -888, 888, 5);
+        UndoTurn(&game_cache);
     }
 
     for(int i = 0; i < number_of_actions; i++){
@@ -62,7 +58,7 @@ void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
 int PopulateActions(game_t *game, int *actions_list){
     int index = 0;
     player_t *player;
-    for (int i = 1; i >= 0; i--)
+    for (int i = 0; i < 2; i++)
         for (int row = 0; row < NUMBER_OF_CELLS; row++)
             for (int col = 0; col < NUMBER_OF_CELLS; col++){
                 if (i == 0)
@@ -102,19 +98,8 @@ void PlayActionsNoHistory(game_t *game, int *action){
     ClickOnCell(game, input, *(action + 1), *(action + 2));
 }
 
-void UndoTurnHistory(){
-    if(latestAction <= 0){
-        printf("latest action is: %d\n", latestAction);
-        return;
-    }
-
+void UndoTurn(game_t *game){
     latestAction--;
-    actionHistory[latestAction][0] = -1;
-    actionHistory[latestAction][1] = -1;
-    actionHistory[latestAction][2] = -1;
-}
-
-void GoThroughActions(game_t *game){
     player_t *red_p = game->red_player;
     player_t *blue_p = game->blue_player;
     player_t *gray_p = game->gray_player;
@@ -162,9 +147,7 @@ double Min(double a, double b){
     return b;
 }
 
-int depth = 2;
-
-double Minimax(game_t *game_C, double alpha, double beta){
+double Minimax(game_t *game_C, double alpha, double beta, int depth){
     switch(game_C->state){
         case P_BLUE_WON:
             return -99;
@@ -183,11 +166,8 @@ double Minimax(game_t *game_C, double alpha, double beta){
     if (game_C->turn == P_RED){
             for(int i = 0; i < numberOfActionsSim; i++){
                 PlayActions(game_C, (actionsListSim[i]));
-                depth--;
-                double value = Minimax(game_C, alpha, beta);
-                depth++;
-                UndoTurnHistory();
-                GoThroughActions(game_C);
+                double value = Minimax(game_C, alpha, beta, depth - 1);
+                UndoTurn(game_C);
                 numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
 
                 alpha = Max(alpha, value);
@@ -201,11 +181,8 @@ double Minimax(game_t *game_C, double alpha, double beta){
     else if(game_C->turn == P_BLUE){
             for(int i = 0; i < numberOfActionsSim; i++){
                 PlayActions(game_C, (actionsListSim[i]));
-                depth--;
-                double value = Minimax(game_C, alpha, beta);
-                depth++;
-                UndoTurnHistory();
-                GoThroughActions(game_C);
+                double value = Minimax(game_C, alpha, beta, depth - 1);
+                UndoTurn(game_C);
                 numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
 
                 beta = Min(beta, value);
