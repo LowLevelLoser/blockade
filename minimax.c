@@ -10,6 +10,7 @@ int actionHistory[NUMBER_OF_CELLS*NUMBER_OF_CELLS*2][3];
 int latestAction = 0;
 int actionsListSim[32][3];
 int numberOfActionsSim = 0;
+int isDoubled = 0;
 // global variables end
 
 int PopulateActions(game_t *game, int *actions_list);
@@ -20,6 +21,7 @@ void PlayActionsNoHistory(game_t *game, int *action);
 void UndoTurn(game_t *game);
 
 void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
+    isDoubled = 0;
     latestAction = 0;
     game->state = THINKING;
     originalGame = game;
@@ -58,7 +60,7 @@ void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
 int PopulateActions(game_t *game, int *actions_list){
     int index = 0;
     player_t *player;
-    for (int i = 0; i < 2; i++)
+    for (int i = 1; i >= 0; i--)
         for (int row = 0; row < NUMBER_OF_CELLS; row++)
             for (int col = 0; col < NUMBER_OF_CELLS; col++){
                 if (i == 0)
@@ -81,7 +83,7 @@ void PlayActions(game_t *game, int *action){
     int input = COMPUTER_INPUT;
     if(*action == 0)
         input = INSERT_GRAY;
-
+   
     actionHistory[latestAction][0] = *(action);
     actionHistory[latestAction][1] = *(action + 1);
     actionHistory[latestAction][2] = *(action + 2);
@@ -129,7 +131,7 @@ double PositionEvaluator(game_t *game){
     double turns = game->red_player->p_counter + game->blue_player->p_counter + game->gray_player->p_counter;
 
     double count_comparison = game->red_player->p_counter - game->blue_player->p_counter;
-    double move_comparison = game->red_player->p_moves - game->blue_player->p_moves;
+    double move_comparison = (game->red_player->p_moves - game->blue_player->p_moves);
     if (game->red_player->p_moves > 8 || game->blue_player->p_moves > 8)
         move_comparison = 0;
 
@@ -164,33 +166,33 @@ double Minimax(game_t *game_C, double alpha, double beta, int depth){
     numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
 
     if (game_C->turn == P_RED){
-            for(int i = 0; i < numberOfActionsSim; i++){
-                PlayActions(game_C, (actionsListSim[i]));
-                double value = Minimax(game_C, alpha, beta, depth - 1);
-                UndoTurn(game_C);
-                numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
+        for(int i = 0; i < numberOfActionsSim; i++){
+            PlayActions(game_C, (actionsListSim[i]));
+            double value = Minimax(game_C, alpha, beta, depth - 1);
+            UndoTurn(game_C);
+            numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
 
-                alpha = Max(alpha, value);
+            alpha = Max(alpha, value);
 
-                if (alpha >= beta){
-                    break;
-                }
+            if (alpha >= beta){
+                break;
             }
+        }
         return alpha;
     }
     else if(game_C->turn == P_BLUE){
-            for(int i = 0; i < numberOfActionsSim; i++){
-                PlayActions(game_C, (actionsListSim[i]));
-                double value = Minimax(game_C, alpha, beta, depth - 1);
-                UndoTurn(game_C);
-                numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
+        for(int i = 0; i < numberOfActionsSim; i++){
+            PlayActions(game_C, (actionsListSim[i]));
+            double value = Minimax(game_C, alpha, beta, depth - 1);
+            UndoTurn(game_C);
+            numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
 
-                beta = Min(beta, value);
+            beta = Min(beta, value);
 
-                if (alpha >= beta){
-                    break;
-                }
+            if (alpha >= beta){
+                break;
             }
+        }
         return beta;
     }
     return -100000000;

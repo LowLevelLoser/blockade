@@ -70,6 +70,6 @@ void RenderBoard(const game_t *game){
 
 void RenderCredits(){
     DrawText("Credits:\nmade by eddi", 10, 5, 30, BLACK);
-    DrawText("\n\ngithub.com/LowLevelLoser\nyoutube.com/@lowlevell0ser25", 10, 5, 30, BLUE);
+    DrawText("\n\nGithub\nYoutube", 10, 5, 30, BLUE);
 }
 

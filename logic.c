@@ -54,11 +54,9 @@ void MenuChoice(game_t *game){
         case KEY_ENTER:
             if (game->choice%3 == 2){
                 game->state = RUNNING_STATE_LOCAL;
-                //printf("local\n");
             }
             else if (game->choice%3 == 1){
                 game->state = RUNNING_STATE_COMP;
-                //printf("comp\n");
             }
             else {
                 game->state = CREDITS;
@@ -68,20 +66,15 @@ void MenuChoice(game_t *game){
 }
 
 void CheckMoves(game_t *game, player_t *player){
-    //printf("\n*****check moves fault\n");
     if (player->p_counter == 0){
-        //printf("\n*****check moves fault p count\n");
         player->p_moves = 16;
         return;
     }
     else {
         player->p_moves = 0;
     }
-    //printf("\nplayer ptr: %p\ngray ptr: %p\n", player, game->gray_player);
     if (player == game->gray_player && game->gray_player->p_counter >= P_GRAY_LIMIT){
-        //printf("\n*****check moves fault p count gray\n");
         game->gray_player->p_moves = 0;
-        //printf("*****check moves fault p count gray end\n");
         return;
     }
  
@@ -89,13 +82,10 @@ void CheckMoves(game_t *game, player_t *player){
         for (int j = -1; j < 2; j++){
             if (((player->headX+j >= NUMBER_OF_CELLS)||(player->headY+i >= NUMBER_OF_CELLS))||
     			((player->headX+j < 0)||(player->headY+i < 0))){
-                //printf("\n*****fault out of bounds check\n");
                 continue;
             }
-            ////printf("\n***is it crash checka da moves\n");
     		if(game->board[player->headX+j][player->headY+i] == EMPTY)
             {
-                //printf("\n*****fault EMPTY board check\n");
                 player->p_moves++;
             }
         }
@@ -182,20 +172,22 @@ void TurnSwitching(game_t *game){
     if(game->red_player->p_moves+game->blue_player->p_moves+game->gray_player->p_moves <= 0)
         DeclareWinner(game);
 
-    if (game->turn == P_RED && (game->red_player->p_moves + game->gray_player->p_moves) <= 0){
+    if (game->turn == P_RED && game->red_player->p_moves <= 0){
         if(game->blue_player->p_counter > game->red_player->p_counter){
             game->state = P_BLUE_WON;
             return;
         }
-        game->turn = P_BLUE;
+        if(game->gray_player->p_moves <= 0)
+            game->turn = P_BLUE;
     }
 
-    if (game->turn == P_BLUE && (game->blue_player->p_moves + game->gray_player->p_moves) <= 0){
+    if (game->turn == P_BLUE && game->blue_player->p_moves <= 0){
         if (game->red_player->p_counter > game->blue_player->p_counter){
             game->state = P_RED_WON;
             return;
         }
-        game->turn = P_RED;
+        if(game->gray_player->p_moves <= 0)
+            game->turn = P_RED;
     }
 }
 
