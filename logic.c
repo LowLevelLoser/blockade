@@ -67,7 +67,10 @@ void MenuChoice(game_t *game){
 
 void CheckMoves(game_t *game, player_t *player){
     if (player->p_counter == 0){
-        player->p_moves = 16;
+        player->p_moves = 0;
+        for(int i = 0; i < NUMBER_OF_CELLS*NUMBER_OF_CELLS; i++)
+            if(game->board[i%NUMBER_OF_CELLS][i/NUMBER_OF_CELLS] == EMPTY)
+                player->p_moves++;
         return;
     }
     else {
