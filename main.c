@@ -8,7 +8,7 @@
 int main(){
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Blockade");
     SetExitKey(0);
-    SetTargetFPS(60);
+    SetTargetFPS(200);
 
 
     player_t red_p;

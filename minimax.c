@@ -45,6 +45,7 @@ void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
     for(int i = 0; i < number_of_actions; i++){
         PlayActions(&game_cache, actions_list[i]);
         actions_value[i] = Minimax(&game_cache, -888, 888, 5);
+        printf("%lf\n", actions_value[i]);
         UndoTurn(&game_cache);
     }
 
@@ -135,7 +136,7 @@ double PositionEvaluator(game_t *game){
     if (game->red_player->p_moves > 8 || game->blue_player->p_moves > 8)
         move_comparison = 0;
 
-    return count_comparison + move_comparison/turns;
+    return count_comparison + move_comparison;//turns;
 }
 
 double Max(double a, double b){
@@ -152,10 +153,13 @@ double Min(double a, double b){
 double Minimax(game_t *game_C, double alpha, double beta, int depth){
     switch(game_C->state){
         case P_BLUE_WON:
+            //printf("blue win\n");
             return -99;
         case P_RED_WON:
+            //printf("red win\n");
             return 99;
         case TIE_STATE:
+            //printf("tie\n");
             return 0;
     }
 
@@ -166,7 +170,7 @@ double Minimax(game_t *game_C, double alpha, double beta, int depth){
     numberOfActionsSim = PopulateActions(game_C, actionsListSim[0]);
 
     if (game_C->turn == P_RED){
-        for(int i = 0; i < numberOfActionsSim; i++){
+        for(int i = 0; i <= numberOfActionsSim; i++){
             PlayActions(game_C, (actionsListSim[i]));
             double value = Minimax(game_C, alpha, beta, depth - 1);
             UndoTurn(game_C);
@@ -181,7 +185,7 @@ double Minimax(game_t *game_C, double alpha, double beta, int depth){
         return alpha;
     }
     else if(game_C->turn == P_BLUE){
-        for(int i = 0; i < numberOfActionsSim; i++){
+        for(int i = 0; i <= numberOfActionsSim; i++){
             PlayActions(game_C, (actionsListSim[i]));
             double value = Minimax(game_C, alpha, beta, depth - 1);
             UndoTurn(game_C);
@@ -195,5 +199,6 @@ double Minimax(game_t *game_C, double alpha, double beta, int depth){
         }
         return beta;
     }
+    printf("this should not be printed");
     return -100000000;
 }
