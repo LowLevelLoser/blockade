@@ -136,7 +136,7 @@ double PositionEvaluator(game_t *game){
     if (game->red_player->p_moves > 8 || game->blue_player->p_moves > 8)
         move_comparison = 0;
 
-    return count_comparison + move_comparison;//turns;
+    return count_comparison + move_comparison/turns;
 }
 
 double Max(double a, double b){
