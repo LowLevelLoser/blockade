@@ -161,7 +161,6 @@ bool IsValidCell(game_t *game, player_t *player, int row, int column){
         return true;
     if (abs(row - player->headY) > 1 || abs(column - player->headX) > 1 )
         return false;
-    
     return true;
 }
 

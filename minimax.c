@@ -44,18 +44,25 @@ void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
 
     for(int i = 0; i < number_of_actions; i++){
         PlayActions(&game_cache, actions_list[i]);
-        actions_value[i] = Minimax(&game_cache, -888, 888, 5);
-        printf("%lf\n", actions_value[i]);
+        actions_value[i] = Minimax(&game_cache, -888, 888, 6);
+        if(actions_list[i][0] == 1){
+            printf("%lf p:blue, r:%d, c:%d\n", actions_value[i], actions_list[i][1],actions_list[i][2]);
+        }
+        else{
+            printf("%lf p:gray, r:%d, c:%d\n", actions_value[i], actions_list[i][1],actions_list[i][2]);
+        }
         UndoTurn(&game_cache);
     }
+
+    printf("==========================\n");
 
     for(int i = 0; i < number_of_actions; i++){
         if (actions_value[i] < actions_value[smallest_value_index])
             smallest_value_index = i;
-    }  
+    }
 
-    game->state = RUNNING_STATE_COMP;
     PlayActionsNoHistory(game, actions_list[smallest_value_index]);
+    game->state = RUNNING_STATE_COMP;
 }
 
 int PopulateActions(game_t *game, int *actions_list){
@@ -133,10 +140,10 @@ double PositionEvaluator(game_t *game){
 
     double count_comparison = game->red_player->p_counter - game->blue_player->p_counter;
     double move_comparison = (game->red_player->p_moves - game->blue_player->p_moves);
-    if (game->red_player->p_moves > 8 || game->blue_player->p_moves > 8)
+    if (game->red_player->p_moves > 6 || game->blue_player->p_moves > 6)
         move_comparison = 0;
 
-    return count_comparison + move_comparison/turns;
+    return 0.25*turns*count_comparison + move_comparison*2/turns;
 }
 
 double Max(double a, double b){
