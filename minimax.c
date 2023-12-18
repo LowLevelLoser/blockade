@@ -44,25 +44,17 @@ void RunAi(game_t *game, player_t *red, player_t *blue, player_t *gray){
 
     for(int i = 0; i < number_of_actions; i++){
         PlayActions(&game_cache, actions_list[i]);
-        actions_value[i] = Minimax(&game_cache, -888, 888, 6);
-        if(actions_list[i][0] == 1){
-            printf("%lf p:blue, r:%d, c:%d\n", actions_value[i], actions_list[i][1],actions_list[i][2]);
-        }
-        else{
-            printf("%lf p:gray, r:%d, c:%d\n", actions_value[i], actions_list[i][1],actions_list[i][2]);
-        }
+        actions_value[i] = Minimax(&game_cache, -888, 888, 5);
         UndoTurn(&game_cache);
     }
-
-    printf("==========================\n");
 
     for(int i = 0; i < number_of_actions; i++){
         if (actions_value[i] < actions_value[smallest_value_index])
             smallest_value_index = i;
-    }
+    }  
 
-    PlayActionsNoHistory(game, actions_list[smallest_value_index]);
     game->state = RUNNING_STATE_COMP;
+    PlayActionsNoHistory(game, actions_list[smallest_value_index]);
 }
 
 int PopulateActions(game_t *game, int *actions_list){
@@ -140,10 +132,10 @@ double PositionEvaluator(game_t *game){
 
     double count_comparison = game->red_player->p_counter - game->blue_player->p_counter;
     double move_comparison = (game->red_player->p_moves - game->blue_player->p_moves);
-    if (game->red_player->p_moves > 6 || game->blue_player->p_moves > 6)
+    if (game->red_player->p_moves > 8 || game->blue_player->p_moves > 8)
         move_comparison = 0;
 
-    return 0.25*turns*count_comparison + move_comparison*2/turns;
+    return count_comparison + move_comparison/turns;
 }
 
 double Max(double a, double b){
@@ -160,13 +152,10 @@ double Min(double a, double b){
 double Minimax(game_t *game_C, double alpha, double beta, int depth){
     switch(game_C->state){
         case P_BLUE_WON:
-            //printf("blue win\n");
             return -99;
         case P_RED_WON:
-            //printf("red win\n");
             return 99;
         case TIE_STATE:
-            //printf("tie\n");
             return 0;
     }
 
@@ -206,6 +195,5 @@ double Minimax(game_t *game_C, double alpha, double beta, int depth){
         }
         return beta;
     }
-    printf("this should not be printed");
     return -100000000;
 }

@@ -3,12 +3,11 @@
 #include "game.h"
 #include "rendering.h"
 #include "logic.h"
-#include <stdio.h>
 
 int main(){
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Blockade");
     SetExitKey(0);
-    SetTargetFPS(200);
+    SetTargetFPS(30);
 
 
     player_t red_p;

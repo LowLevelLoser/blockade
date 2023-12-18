@@ -67,7 +67,7 @@ void MenuChoice(game_t *game){
 
 void CheckMoves(game_t *game, player_t *player){
     if (player->p_counter == 0){
-        player->p_moves = NUMBER_OF_CELLS*NUMBER_OF_CELLS - game->gray_player->p_counter - game->red_player->p_counter - game->blue_player->p_counter;
+        player->p_moves = 16;
         return;
     }
     else {
@@ -161,6 +161,7 @@ bool IsValidCell(game_t *game, player_t *player, int row, int column){
         return true;
     if (abs(row - player->headY) > 1 || abs(column - player->headX) > 1 )
         return false;
+    
     return true;
 }
 
